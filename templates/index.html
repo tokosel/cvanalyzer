@@ -1,0 +1,151 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse de CV Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-4xl font-bold text-center mb-12 text-gray-800">🔍 Abdoulaye's CV Matcher 🚀</h1>
+        
+        <!-- Formulaire -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-4xl mx-auto">
+            <!-- Description du poste -->
+            <div class="mb-8">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Description du Poste
+                </label>
+                <textarea
+                    v-model="jobDescription"
+                    class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                    rows="4"
+                    placeholder="Détails précis du poste..."></textarea>
+            </div>
+
+            <!-- Type d'analyse -->
+            <div class="mb-8">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Type d'Analyse
+                </label>
+                <select
+                    v-model="analysisType"
+                    class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+                    <option value="matching">Matching Général</option>
+                    <option value="technical">Filtrage Technique</option>
+                    <option value="psychological">Profil Psychologique</option>
+                </select>
+            </div>
+
+            <!-- Upload CV -->
+            <div class="mb-8">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Télécharger CV (PDF)
+                </label>
+                <input
+                    type="file"
+                    @change="handleFileUpload"
+                    multiple
+                    accept=".pdf"
+                    class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+            </div>
+
+            <!-- Bouton d'analyse -->
+            <button
+                @click="analyzeCV"
+                :disabled="!canAnalyze"
+                class="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition duration-200">
+                Analyser
+            </button>
+        </div>
+
+        <!-- Résultats -->
+        <template v-if="results.length > 0">
+            <div v-for="result in results" :key="result.filename" class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">📄 Résultat d'analyse de [[ result.filename ]]</h2>
+                <div class="prose prose-lg max-w-none" v-html="formatAnalysis(result.analysis)"></div>
+            </div>
+        </template>
+
+        <!-- Loading spinner -->
+        <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    jobDescription: '',
+                    analysisType: 'matching',
+                    selectedFiles: null,
+                    results: [],
+                    loading: false
+                }
+            },
+            computed: {
+                canAnalyze() {
+                    return this.jobDescription && this.selectedFiles?.length > 0
+                }
+            },
+            methods: {
+                handleFileUpload(event) {
+                    this.selectedFiles = event.target.files
+                },
+                formatAnalysis(text) {
+                    // Convertir les emojis et le texte en HTML formaté
+                    return text
+                        .replace(/\n\n/g, '</p><p>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/🎯|📄|🔑|🚨|💡/g, '<span class="text-2xl">$&</span>')
+                        .split('\n').map(line => {
+                            if (line.startsWith('*')) {
+                                return `<li class="mb-2">${line.substring(1).trim()}</li>`;
+                            }
+                            return line;
+                        }).join('\n')
+                        .replace(/(^|\n)\* /g, '\n<li>')
+                        .replace(/\n/g, '<br>')
+                        .replace(/<li>(.*?)<br>/g, '<li class="mb-2">$1</li>')
+                        .replace(/<br><li>/g, '<li>')
+                        .replace(/(<li>.*?<\/li>)+/g, match => `<ul class="list-disc pl-6 my-4">${match}</ul>`);
+                },
+                async analyzeCV() {
+                    if (!this.canAnalyze) return
+
+                    this.loading = true
+                    const formData = new FormData()
+                    formData.append('job_description', this.jobDescription)
+                    formData.append('analysis_type', this.analysisType)
+                    
+                    for (let file of this.selectedFiles) {
+                        formData.append('cv_files', file)
+                    }
+
+                    try {
+                        const response = await axios.post('/analyze', formData)
+                        if (response.data.success) {
+                            this.results = response.data.results
+                        } else {
+                            alert("Erreur lors de l'analyse: " + response.data.error)
+                        }
+                    } catch (error) {
+                        alert('Erreur: ' + error.message)
+                    } finally {
+                        this.loading = false
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
