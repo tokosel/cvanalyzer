@@ -135,7 +135,7 @@ def analyze():
                         'error': f"Erreur lors de l'analyse du fichier {file.filename}: {str(e)}"
                     })
         
-        return jsonify({'success': True, 'results': results})
+        return jsonify({'success': True, 'results': results, 'message': "✅ Analyse terminée ! Faites défiler la page pour voir les résultats en bas. 🔽"})
     except Exception as e:
         logging.error(f"Erreur générale: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})

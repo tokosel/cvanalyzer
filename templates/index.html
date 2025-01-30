@@ -13,16 +13,17 @@
     <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Section d'introduction -->
         <div class="max-w-4xl mx-auto text-center my-12">
-            <h1 class="text-4xl font-bold text-gray-800">🎯 Boostez vos Chances avec un CV Optimisé !</h1>
+            <h1 class="text-4xl font-bold text-gray-800">🎯 Boostez vos chances avec un CV optimisé !</h1>
             
             <blockquote class="relative bg-gray-50 text-gray-700 text-lg italic px-6 py-4 mt-6 border-l-4 border-blue-500">
                 <p>
-                     ℹ️ Ce projet est un outil d’accompagnement destiné aux élèves, étudiants et chercheurs d’emploi. <br>
+                     ℹ️ Cet outil d’accompagnement destiné aux élèves, étudiants et chercheurs d’emploi. <br>
                     Il vous aide à mieux comprendre les attentes des recruteurs et à adapter votre CV de manière à capter leur attention, 
                     y compris face aux systèmes de tri automatique (ATS). <br> <br> <br>
-                    ⚠️ Cet outil ne garantit pas un emploi, 
-                    mais il vous offre une analyse précieuse pour maximiser vos chances.
+                    <span class="text-blue-600 "> ⚠️ Cet outil ne garantit pas un emploi, 
+                    mais il vous offre une analyse précieuse pour maximiser vos chances. </span>
                 </p>
+                
                 <span class="absolute top-0 bottom-0 right-0 w-1 bg-blue-500"></span>
             </blockquote>
         </div>
@@ -39,7 +40,7 @@
                     v-model="jobDescription"
                     class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
                     rows="4"
-                    placeholder="Détails précis du poste..."></textarea>
+                    placeholder="Détails précis de l'offre d'emploi cibé ..."></textarea>
             </div>
 
             <!-- Type d'analyse -->
@@ -56,55 +57,39 @@
                 </select>
             </div>
 
-            <!-- Upload CV 
+            <!-- Section Upload CV améliorée -->
             <div class="mb-8">
                 <label class="block text-gray-700 text-sm font-bold mb-3">
                     Télécharger CV (PDF)
                 </label>
-                <input
-                    type="file"
-                    @change="handleFileUpload"
-                    multiple
-                    accept=".pdf"
-                    class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
-            </div> -->
+                <div 
+                    @dragover.prevent="dragging = true" 
+                    @dragleave.prevent="dragging = false" 
+                    @drop.prevent="handleDrop"
+                    @click="triggerFileInput"
+                    :class="{'border-blue-500 bg-blue-50': dragging}"
+                    class="w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50 transition duration-300 ease-in-out hover:border-blue-500 hover:bg-blue-100 flex flex-col items-center justify-center">
+                    
+                    <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V8m0 0l4 4m-4-4L3 12m11 4h6m0 0l-4-4m4 4l-4 4" />
+                    </svg>
 
-            <!-- Section Upload CV améliorée -->
-<div class="mb-8">
-    <label class="block text-gray-700 text-sm font-bold mb-3">
-        Télécharger CV (PDF)
-    </label>
-    <div 
-        @dragover.prevent="dragging = true" 
-        @dragleave.prevent="dragging = false" 
-        @drop.prevent="handleDrop"
-        @click="triggerFileInput"
-        :class="{'border-blue-500 bg-blue-50': dragging}"
-        class="w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50 transition duration-300 ease-in-out hover:border-blue-500 hover:bg-blue-100 flex flex-col items-center justify-center">
-        
-        <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V8m0 0l4 4m-4-4L3 12m11 4h6m0 0l-4-4m4 4l-4 4" />
-        </svg>
+                    <p class="text-gray-700">Glissez et déposez votre fichier ici ou <span class="text-blue-600 font-semibold">cliquez pour parcourir</span></p>
+                    
+                    <input type="file" id="fileInput" multiple accept=".pdf" class="hidden" @change="handleFileUpload">
+                </div>
 
-        <p class="text-gray-700">Glissez et déposez votre fichier ici ou <span class="text-blue-600 font-semibold">cliquez pour parcourir</span></p>
-        
-        <input type="file" id="fileInput" multiple accept=".pdf" class="hidden" @change="handleFileUpload">
-    </div>
-
-    <!-- Affichage des fichiers uploadés -->
-    <div v-if="selectedFiles.length" class="mt-4">
-        <p class="text-gray-700 font-semibold mb-2">Fichiers sélectionnés :</p>
-        <ul class="bg-gray-50 p-4 rounded-lg shadow-sm">
-            <li v-for="(file, index) in selectedFiles" :key="index" class="flex justify-between items-center mb-2 bg-white p-2 rounded-md shadow-sm">
-                <span class="text-gray-800">📄 [[ file.name ]]</span>
-                <button @click="removeFile(index)" class="text-red-600 font-bold hover:text-red-800">❌</button>
-            </li>
-        </ul>
-    </div>
-</div>
-
-
-            
+                <!-- Affichage des fichiers uploadés -->
+                <div v-if="selectedFiles.length" class="mt-4">
+                    <p class="text-gray-700 font-semibold mb-2">CV ajouté :</p>
+                    <ul class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <li v-for="(file, index) in selectedFiles" :key="index" class="flex justify-between items-center mb-2 bg-white p-2 rounded-md shadow-sm">
+                            <span class="text-gray-800">📄 [[ file.name ]]</span>
+                            <button @click="removeFile(index)" class="text-red-600 font-bold hover:text-red-800">❌</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
             <!-- Bouton d'analyse -->
             <button
@@ -127,16 +112,26 @@
         <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
         </div>
+
+        <div v-if="flashMessage" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-3 rounded-md shadow-lg text-center">
+            [[ flashMessage ]]
+        </div>
+        
+        
     
         <!-- Footer -->
-        <footer class="bg-gray-500 text-white text-center py-4 mt-12">
+        <footer class="bg-blue-600 text-white text-center py-4 mt-12">
             <p class="text-lg">
-                Made with ❤️ by <span class="font-bold text-blue-400">TOKOSEL</span>
+                Made with ❤️ by 
+                <a href="https://www.linkedin.com/in/abdoulayesall/" target="_blank" class="font-bold hover:underline">
+                    TOKOSEL
+                </a>
             </p>
+            
         </footer>
 
     </div>
-<!---->
+<!--
     <script>
         const { createApp } = Vue
     
@@ -217,7 +212,98 @@
                 }
             }
         }).mount('#app')
-    </script> 
+    </script>
+    -->
+    <script>
+        const { createApp } = Vue
+    
+        createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    jobDescription: '',
+                    analysisType: 'matching',
+                    selectedFiles: [],
+                    dragging: false, // État du drag & drop
+                    results: [],
+                    loading: false,
+                    flashMessage: '' // Message flash
+                }
+            },
+            computed: {
+                canAnalyze() {
+                    return this.jobDescription && this.selectedFiles.length > 0;
+                }
+            },
+            methods: {
+                handleFileUpload(event) {
+                    this.selectedFiles = Array.from(event.target.files);
+                },
+                handleDrop(event) {
+                    event.preventDefault();
+                    this.dragging = false;
+                    this.selectedFiles = Array.from(event.dataTransfer.files);
+                },
+                triggerFileInput() {
+                    document.getElementById('fileInput').click();
+                },
+                removeFile(index) {
+                    this.selectedFiles.splice(index, 1);
+                },
+                formatAnalysis(text) {
+                    return text
+                        .replace(/\n\n/g, '</p><p>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/🎯|📄|🔑|🚨|💡/g, '<span class="text-2xl">$&</span>')
+                        .split('\n').map(line => {
+                            if (line.startsWith('*')) {
+                                return `<li class="mb-2">${line.substring(1).trim()}</li>`;
+                            }
+                            return line;
+                        }).join('\n')
+                        .replace(/(^|\n)\* /g, '\n<li>')
+                        .replace(/\n/g, '<br>')
+                        .replace(/<li>(.*?)<br>/g, '<li class="mb-2">$1</li>')
+                        .replace(/<br><li>/g, '<li>')
+                        .replace(/(<li>.*?<\/li>)+/g, match => `<ul class="list-disc pl-6 my-4">${match}</ul>`);
+                },
+                showFlashMessage(message) {
+                    this.flashMessage = message;
+                    setTimeout(() => {
+                        this.flashMessage = '';
+                    }, 5000);
+                },
+                async analyzeCV() {
+                    if (!this.canAnalyze) return;
+    
+                    this.loading = true;
+                    const formData = new FormData();
+                    formData.append('job_description', this.jobDescription);
+                    formData.append('analysis_type', this.analysisType);
+    
+                    for (let file of this.selectedFiles) {
+                        formData.append('cv_files', file);
+                    }
+    
+                    try {
+                        const response = await axios.post('/analyze', formData);
+                        if (response.data.success) {
+                            this.results = response.data.results;
+                            this.showFlashMessage("✅ Analyse terminée ! Faites défiler la page pour voir les résultats en bas. 🔽");
+                        } else {
+                            alert("Erreur lors de l'analyse: " + response.data.error);
+                        }
+                    } catch (error) {
+                        alert('Erreur: ' + error.message);
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+    
     
     
     
