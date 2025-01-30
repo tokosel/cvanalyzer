@@ -68,28 +68,40 @@
                     class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
             </div> -->
 
-            <!-- Upload CV amélioré avec drag & drop -->
-            <div class="mb-8">
-                <label class="block text-gray-700 text-sm font-bold mb-3">
-                    Télécharger CV (PDF)
-                </label>
-                <div 
-                    @dragover.prevent="dragging = true" 
-                    @dragleave.prevent="dragging = false" 
-                    @drop.prevent="handleDrop"
-                    @click="triggerFileInput"
-                    :class="{'border-blue-500 bg-blue-50': dragging}"
-                    class="w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50 transition duration-300 ease-in-out hover:border-blue-500 hover:bg-blue-100 flex flex-col items-center justify-center">
-                    
-                    <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V8m0 0l4 4m-4-4L3 12m11 4h6m0 0l-4-4m4 4l-4 4" />
-                    </svg>
+            <!-- Section Upload CV améliorée -->
+<div class="mb-8">
+    <label class="block text-gray-700 text-sm font-bold mb-3">
+        Télécharger CV (PDF)
+    </label>
+    <div 
+        @dragover.prevent="dragging = true" 
+        @dragleave.prevent="dragging = false" 
+        @drop.prevent="handleDrop"
+        @click="triggerFileInput"
+        :class="{'border-blue-500 bg-blue-50': dragging}"
+        class="w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50 transition duration-300 ease-in-out hover:border-blue-500 hover:bg-blue-100 flex flex-col items-center justify-center">
+        
+        <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V8m0 0l4 4m-4-4L3 12m11 4h6m0 0l-4-4m4 4l-4 4" />
+        </svg>
 
-                    <p class="text-gray-700">Glissez et déposez votre fichier ici ou <span class="text-blue-600 font-semibold">cliquez pour parcourir</span></p>
-                    
-                    <input type="file" id="fileInput" multiple accept=".pdf" class="hidden" @change="handleFileUpload">
-                </div>
-            </div>
+        <p class="text-gray-700">Glissez et déposez votre fichier ici ou <span class="text-blue-600 font-semibold">cliquez pour parcourir</span></p>
+        
+        <input type="file" id="fileInput" multiple accept=".pdf" class="hidden" @change="handleFileUpload">
+    </div>
+
+    <!-- Affichage des fichiers uploadés -->
+    <div v-if="selectedFiles.length" class="mt-4">
+        <p class="text-gray-700 font-semibold mb-2">Fichiers sélectionnés :</p>
+        <ul class="bg-gray-50 p-4 rounded-lg shadow-sm">
+            <li v-for="(file, index) in selectedFiles" :key="index" class="flex justify-between items-center mb-2 bg-white p-2 rounded-md shadow-sm">
+                <span class="text-gray-800">📄 [[ file.name ]]</span>
+                <button @click="removeFile(index)" class="text-red-600 font-bold hover:text-red-800">❌</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
 
             
 
@@ -123,6 +135,7 @@
         </footer>
 
     </div>
+<!---->
     <script>
         const { createApp } = Vue
     
@@ -132,7 +145,7 @@
                 return {
                     jobDescription: '',
                     analysisType: 'matching',
-                    selectedFiles: null,
+                    selectedFiles: [],
                     dragging: false, // État du drag & drop
                     results: [],
                     loading: false
@@ -140,20 +153,23 @@
             },
             computed: {
                 canAnalyze() {
-                    return this.jobDescription && this.selectedFiles?.length > 0
+                    return this.jobDescription && this.selectedFiles.length > 0
                 }
             },
             methods: {
                 handleFileUpload(event) {
-                    this.selectedFiles = event.target.files;
+                    this.selectedFiles = Array.from(event.target.files);
                 },
                 handleDrop(event) {
                     event.preventDefault();
                     this.dragging = false;
-                    this.selectedFiles = event.dataTransfer.files;
+                    this.selectedFiles = Array.from(event.dataTransfer.files);
                 },
                 triggerFileInput() {
                     document.getElementById('fileInput').click();
+                },
+                removeFile(index) {
+                    this.selectedFiles.splice(index, 1);
                 },
                 formatAnalysis(text) {
                     return text
@@ -200,7 +216,8 @@
                 }
             }
         }).mount('#app')
-    </script>
+    </script> 
+    
     
     
 </body>
