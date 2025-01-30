@@ -11,7 +11,21 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-4xl font-bold text-center mb-12 text-gray-800">🔍 Abdoulaye's CV Matcher 🚀</h1>
+        <!-- Section d'introduction -->
+        <div class="max-w-4xl mx-auto text-center my-12">
+            <h1 class="text-4xl font-bold text-gray-800">🎯 Boostez vos Chances avec un CV Optimisé !</h1>
+            
+            <blockquote class="relative bg-gray-50 text-gray-700 text-lg italic px-6 py-4 mt-6 border-l-4 border-blue-500">
+                <p>
+                    🚀 Ce projet est un outil d’accompagnement destiné aux élèves, étudiants et chercheurs d’emploi. 
+                    Il vous aide à mieux comprendre les attentes des recruteurs et à structurer votre CV de manière à capter leur attention, 
+                    y compris face aux systèmes de tri automatique (ATS). <br> Cet outil ne garantit pas un emploi, 
+                    mais il vous offre une analyse précieuse pour maximiser vos chances. 💡
+                </p>
+                <span class="absolute top-0 bottom-0 right-0 w-1 bg-blue-500"></span>
+            </blockquote>
+        </div>
+
         
         <!-- Formulaire -->
         <div class="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-4xl mx-auto">
@@ -75,6 +89,14 @@
         <div v-if="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
         </div>
+    
+        <!-- Footer -->
+        <footer class="bg-gray-500 text-white text-center py-4 mt-12">
+            <p class="text-lg">
+                Made with ❤️ by <span class="font-bold text-blue-400">TOKOSEL</span>
+            </p>
+        </footer>
+
     </div>
 
     <script>
