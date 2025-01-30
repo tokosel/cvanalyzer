@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyse de CV Pro</title>
+    <title>Coaching CV PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -51,9 +51,9 @@
                 <select
                     v-model="analysisType"
                     class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
-                    <option value="matching">Matching Général</option>
+                    <option value="matching">Analyse Globale</option>
                     <option value="technical">Filtrage Technique</option>
-                    <option value="psychological">Profil Psychologique</option>
+                    <option value="psychological">Soft Skills</option>
                 </select>
             </div>
 
@@ -113,7 +113,7 @@
             <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
         </div>
 
-        <div v-if="flashMessage" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white p-3 rounded-md shadow-lg text-center">
+        <div v-if="flashMessage" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white p-3 rounded-md shadow-lg text-center">
             [[ flashMessage ]]
         </div>
         
@@ -131,7 +131,7 @@
         </footer>
 
     </div>
-<!--
+
     <script>
         const { createApp } = Vue
     
@@ -142,92 +142,10 @@
                     jobDescription: '',
                     analysisType: 'matching',
                     selectedFiles: [],
-                    dragging: false, // État du drag & drop
-                    results: [],
-                    loading: false
-                }
-            },
-            computed: {
-                canAnalyze() {
-                    return this.jobDescription && this.selectedFiles.length > 0
-                }
-            },
-            methods: {
-                handleFileUpload(event) {
-                    this.selectedFiles = Array.from(event.target.files);
-                },
-                handleDrop(event) {
-                    event.preventDefault();
-                    this.dragging = false;
-                    this.selectedFiles = Array.from(event.dataTransfer.files);
-                },
-                triggerFileInput() {
-                    document.getElementById('fileInput').click();
-                },
-                removeFile(index) {
-                    this.selectedFiles.splice(index, 1);
-                },
-                formatAnalysis(text) {
-                    return text
-                        .replace(/\n\n/g, '</p><p>')
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        .replace(/🎯|📄|🔑|🚨|💡/g, '<span class="text-2xl">$&</span>')
-                        .split('\n').map(line => {
-                            if (line.startsWith('*')) {
-                                return `<li class="mb-2">${line.substring(1).trim()}</li>`;
-                            }
-                            return line;
-                        }).join('\n')
-                        .replace(/(^|\n)\* /g, '\n<li>')
-                        .replace(/\n/g, '<br>')
-                        .replace(/<li>(.*?)<br>/g, '<li class="mb-2">$1</li>')
-                        .replace(/<br><li>/g, '<li>')
-                        .replace(/(<li>.*?<\/li>)+/g, match => `<ul class="list-disc pl-6 my-4">${match}</ul>`);
-                },
-                async analyzeCV() {
-                    if (!this.canAnalyze) return;
-    
-                    this.loading = true;
-                    const formData = new FormData();
-                    formData.append('job_description', this.jobDescription);
-                    formData.append('analysis_type', this.analysisType);
-                    
-                    for (let file of this.selectedFiles) {
-                        formData.append('cv_files', file);
-                    }
-    
-                    try {
-                        const response = await axios.post('/analyze', formData);
-                        if (response.data.success) {
-                            this.results = response.data.results;
-                        } else {
-                            alert("Erreur lors de l'analyse: " + response.data.error);
-                        }
-                    } catch (error) {
-                        alert('Erreur: ' + error.message);
-                    } finally {
-                        this.loading = false;
-                    }
-                }
-            }
-        }).mount('#app')
-    </script>
-    -->
-    <script>
-        const { createApp } = Vue
-    
-        createApp({
-            delimiters: ['[[', ']]'],
-            data() {
-                return {
-                    jobDescription: '',
-                    analysisType: 'matching',
-                    selectedFiles: [],
-                    dragging: false, // État du drag & drop
+                    dragging: false,
                     results: [],
                     loading: false,
-                    flashMessage: '' // Message flash
+                    flashMessage: '' 
                 }
             },
             computed: {
