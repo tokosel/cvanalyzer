@@ -7,6 +7,7 @@ import fitz  # PyMuPDF
 import tempfile
 import logging
 
+
 app = Flask(__name__)
 load_dotenv()
 
