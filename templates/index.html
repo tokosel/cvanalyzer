@@ -55,7 +55,7 @@
                 </select>
             </div>
 
-            <!-- Upload CV -->
+            <!-- Upload CV 
             <div class="mb-8">
                 <label class="block text-gray-700 text-sm font-bold mb-3">
                     Télécharger CV (PDF)
@@ -66,7 +66,32 @@
                     multiple
                     accept=".pdf"
                     class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+            </div> -->
+
+            <!-- Upload CV amélioré avec drag & drop -->
+            <div class="mb-8">
+                <label class="block text-gray-700 text-sm font-bold mb-3">
+                    Télécharger CV (PDF)
+                </label>
+                <div 
+                    @dragover.prevent="dragging = true" 
+                    @dragleave.prevent="dragging = false" 
+                    @drop.prevent="handleDrop"
+                    @click="triggerFileInput"
+                    :class="{'border-blue-500 bg-blue-50': dragging}"
+                    class="w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer bg-gray-50 transition duration-300 ease-in-out hover:border-blue-500 hover:bg-blue-100 flex flex-col items-center justify-center">
+                    
+                    <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V8m0 0l4 4m-4-4L3 12m11 4h6m0 0l-4-4m4 4l-4 4" />
+                    </svg>
+
+                    <p class="text-gray-700">Glissez et déposez votre fichier ici ou <span class="text-blue-600 font-semibold">cliquez pour parcourir</span></p>
+                    
+                    <input type="file" id="fileInput" multiple accept=".pdf" class="hidden" @change="handleFileUpload">
+                </div>
             </div>
+
+            
 
             <!-- Bouton d'analyse -->
             <button
@@ -98,10 +123,9 @@
         </footer>
 
     </div>
-
     <script>
         const { createApp } = Vue
-
+    
         createApp({
             delimiters: ['[[', ']]'],
             data() {
@@ -109,6 +133,7 @@
                     jobDescription: '',
                     analysisType: 'matching',
                     selectedFiles: null,
+                    dragging: false, // État du drag & drop
                     results: [],
                     loading: false
                 }
@@ -120,10 +145,17 @@
             },
             methods: {
                 handleFileUpload(event) {
-                    this.selectedFiles = event.target.files
+                    this.selectedFiles = event.target.files;
+                },
+                handleDrop(event) {
+                    event.preventDefault();
+                    this.dragging = false;
+                    this.selectedFiles = event.dataTransfer.files;
+                },
+                triggerFileInput() {
+                    document.getElementById('fileInput').click();
                 },
                 formatAnalysis(text) {
-                    // Convertir les emojis et le texte en HTML formaté
                     return text
                         .replace(/\n\n/g, '</p><p>')
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -142,32 +174,34 @@
                         .replace(/(<li>.*?<\/li>)+/g, match => `<ul class="list-disc pl-6 my-4">${match}</ul>`);
                 },
                 async analyzeCV() {
-                    if (!this.canAnalyze) return
-
-                    this.loading = true
-                    const formData = new FormData()
-                    formData.append('job_description', this.jobDescription)
-                    formData.append('analysis_type', this.analysisType)
+                    if (!this.canAnalyze) return;
+    
+                    this.loading = true;
+                    const formData = new FormData();
+                    formData.append('job_description', this.jobDescription);
+                    formData.append('analysis_type', this.analysisType);
                     
                     for (let file of this.selectedFiles) {
-                        formData.append('cv_files', file)
+                        formData.append('cv_files', file);
                     }
-
+    
                     try {
-                        const response = await axios.post('/analyze', formData)
+                        const response = await axios.post('/analyze', formData);
                         if (response.data.success) {
-                            this.results = response.data.results
+                            this.results = response.data.results;
                         } else {
-                            alert("Erreur lors de l'analyse: " + response.data.error)
+                            alert("Erreur lors de l'analyse: " + response.data.error);
                         }
                     } catch (error) {
-                        alert('Erreur: ' + error.message)
+                        alert('Erreur: ' + error.message);
                     } finally {
-                        this.loading = false
+                        this.loading = false;
                     }
                 }
             }
         }).mount('#app')
     </script>
+    
+    
 </body>
 </html>
