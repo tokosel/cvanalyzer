@@ -45,54 +45,67 @@ def pdf_to_text(pdf_file):
     return text
 
 def get_gemini_response(job_description, cv_text, analysis_type):
-    """Analyse du CV avec perspective de recrutement"""
+    """Analyse du CV avec perspective de coaching pour chercheurs d'emploi"""
+    
     analysis_prompts = {
-        "matching": f"""Agis en chargé de recrutement expert. 
-        Analyse ce CV par rapport à ce poste :
-        Descriptif du poste : {job_description}
-        CV analysé : {cv_text}
-        Évalue précisément :
-        - Correspondance globale du profil
-        - Compétences clés
-        - Adéquation formation/expérience
-        - Potentiel pour le poste
-        Format :
-        🎯 Taux de Matching : X%
-        🔑 Compétences Clés Alignées : [liste]
-        🚨 Points à Améliorer : [liste]
-        💡 Recommandations : [conseils]""",
+        "matching": f"""En tant que coach en recherche d'emploi, je vais vous aider à optimiser votre candidature pour ce poste.
         
-        "technical": f"""Analyse technique du CV :
-        Poste : {job_description}
-        CV : {cv_text}
-        Filtres :
-        - Technologies requises
-        - Niveau technique
-        - Certifications
-        - Expériences techniques précises
-        Rapport :
-        ✅ Technologies Maîtrisées : [liste]
-        ❌ Technologies Manquantes : [liste]
-        📊 Score Technique : X/10""",
+        📌 **Descriptif du poste** : {job_description}
+        📄 **Votre CV** : {cv_text}
         
-        "psychological": f"""Analyse comportementale du candidat :
-        Contexte : {job_description}
-        CV : {cv_text}
-        Évaluation :
-        - Soft skills
-        - Adaptabilité
-        - Potentiel de développement
-        - Alignement culturel
-        Insights :
-        🧠 Profil Psychologique : [description]
-        🤝 Compatibilité Culturelle : X%
-        🚀 Potentiel de Croissance : [évaluation]"""
+        **Analyse & Conseils Personnalisés :**
+        - 🔍 Correspondance de votre profil avec l’offre
+        - ✅ Vos points forts à valoriser
+        - 🔧 Axes d’amélioration
+        - 🎯 Stratégies concrètes pour maximiser vos chances d’être recruté(e)
+        
+        **Format du retour :**
+        🎯 **Niveau d’adéquation au poste** : X%  
+        💡 **Forces et atouts à mettre en avant** : [liste]  
+        🚀 **Points à améliorer & recommandations** : [liste avec actions précises]  
+        📌 **Conseils pour renforcer votre candidature** : [actions pratiques]""",
+        
+        "technical": f"""Je vais analyser votre profil technique et vous donner des conseils pour optimiser votre positionnement sur le marché du travail.
+        
+        📌 **Poste ciblé** : {job_description}
+        📄 **Votre CV** : {cv_text}
+        
+        **Analyse et recommandations :**
+        - ✅ Technologies et outils que vous maîtrisez
+        - ❌ Compétences techniques à renforcer
+        - 🎓 Formations et certifications à valoriser ou à acquérir
+        - 📊 Stratégies pour améliorer votre attractivité auprès des recruteurs
+        
+        **Format du retour :**
+        ✅ **Compétences techniques mises en avant** : [liste]  
+        ❌ **Manques identifiés et suggestions d’amélioration** : [liste]  
+        📌 **Formations ou certifications à envisager** : [recommandations]  
+        🚀 **Conseils pour renforcer votre profil technique** : [actions pratiques]""",
+        
+        "psychological": f"""Je vais analyser votre profil comportemental afin de vous donner des conseils pour mieux vous positionner et réussir vos entretiens.
+        
+        📌 **Contexte du poste** : {job_description}
+        📄 **Votre CV** : {cv_text}
+        
+        **Évaluation des soft skills & coaching personnalisé :**
+        - 🧠 Votre profil psychologique
+        - 🤝 Votre capacité à vous intégrer dans une équipe / culture d'entreprise
+        - 🚀 Votre potentiel d’évolution et vos axes de développement
+        - 🔥 Conseils pour valoriser vos soft skills en entretien et sur votre CV
+        
+        **Format du retour :**
+        🧠 **Vos forces comportementales** : [description]  
+        🤝 **Votre niveau d’alignement avec la culture d’entreprise** : X%  
+        🚀 **Axes d’amélioration et conseils de développement personnel** : [liste]  
+        🎤 **Stratégies pour mieux vous vendre en entretien** : [conseils]"""
     }
     
     prompt = analysis_prompts.get(analysis_type, analysis_prompts["matching"])
-    model = genai.GenerativeModel("gemini-1.5-flash-8b-exp-0827")
+    model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(prompt)
+    
     return response.text
+
 
 @app.route('/')
 def index():
